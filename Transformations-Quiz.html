@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Function Transformations Quiz</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #e0f7fa 0%, #fce4ec 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #555;
+            overflow: auto;
+        }
+        
+        html {
+            height: 100%;
+        }
+        
+        .container {
+            width: 95%;
+            max-width: 1400px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin: 20px;
+            max-height: 95vh;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(to right, #81d4fa, #ce93d8, #80deea);
+        }
+        
+        .header-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+            position: relative;
+        }
+        
+        h1 {
+            color: #5e35b1;
+            margin: 0;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            font-size: 2rem;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .mode-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f3e5f5;
+            padding: 8px 15px;
+            border-radius: 25px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+            position: absolute;
+            right: 0;
+        }
+        
+        .toggle-label {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .toggle-hard {
+            color: #d81b60;
+        }
+        
+        .toggle-easy {
+            color: #43a047;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ffab91;
+            transition: .4s;
+            border-radius: 30px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #80cbc4;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+        
+        .full-width-formula {
+            font-size: 1.3rem;
+            margin: 10px 0 20px 0;
+            padding: 12px;
+            background: linear-gradient(to right, #e1f5fe, #f3e5f5);
+            border-radius: 10px;
+            border-left: 5px solid #5e35b1;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            width: 100%;
+            color: #5e35b1;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+        }
+        
+        .content-area {
+            display: flex;
+            gap: 30px;
+            margin-top: 5px;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        @media (max-width: 1100px) {
+            .content-area {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .mode-toggle {
+                position: relative;
+                right: auto;
+                margin-top: 10px;
+            }
+            
+            .header-row {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+        
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        
+        .question-type {
+            font-size: 1rem;
+            color: #7e57c2;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-align: center;
+            padding: 6px;
+            background: rgba(225, 245, 254, 0.5);
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+        
+        .question-display {
+            font-size: 1.6rem;
+            margin: 10px 0;
+            padding: 18px;
+            background: linear-gradient(135deg, #e1f5fe 0%, #f3e5f5 100%);
+            border-radius: 12px;
+            border: 2px dashed #81d4fa;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            text-align: center;
+            min-height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5e35b1;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+        }
+        
+        .description-display {
+            font-size: 1.4rem;
+            margin: 10px 0;
+            padding: 18px;
+            background: linear-gradient(135deg, #e1f5fe 0%, #f3e5f5 100%);
+            border-radius: 12px;
+            border: 2px dashed #81d4fa;
+            font-weight: 600;
+            text-align: center;
+            min-height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5e35b1;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+            line-height: 1.5;
+        }
+        
+        .parameters-container {
+            margin: 10px 0;
+            padding: 12px;
+            background: linear-gradient(135deg, #bbdefb 0%, #e1bee7 100%);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+        }
+        
+        .parameters-title {
+            font-weight: bold;
+            color: #5e35b1;
+            margin-bottom: 8px;
+            text-align: center;
+            font-size: 1rem;
+        }
+        
+        .parameters {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .param {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+        
+        .param-name {
+            font-weight: bold;
+            color: #7e57c2;
+        }
+        
+        /* Fixed feedback container with reserved space */
+        .feedback-container {
+            min-height: 80px;
+            margin: 15px 0;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .feedback {
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .feedback.correct {
+            background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);
+            color: #1b5e20;
+            border: 1px solid #81c784;
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .feedback.incorrect {
+            background: linear-gradient(135deg, #ffcdd2 0%, #ef9a9a 100%);
+            color: #b71c1c;
+            border: 1px solid #e57373;
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Fixed options container with reserved space */
+        .options-wrapper {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1f5fe 100%);
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border: 1px solid rgba(206, 147, 216, 0.3);
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            overflow-y: auto;
+            padding-right: 5px;
+            flex: 1;
+        }
+        
+        /* Custom scrollbar for options container */
+        .options-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .options-container::-webkit-scrollbar-track {
+            background: rgba(225, 245, 254, 0.5);
+            border-radius: 10px;
+        }
+        
+        .options-container::-webkit-scrollbar-thumb {
+            background: #81d4fa;
+            border-radius: 10px;
+        }
+        
+        .options-container::-webkit-scrollbar-thumb:hover {
+            background: #4fc3f7;
+        }
+        
+        .option {
+            padding: 14px 16px;
+            border: 2px solid #ce93d8;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1f5fe 100%);
+            color: #5e35b1;
+            flex-shrink: 0;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            min-height: 60px;
+        }
+        
+        .option.function-option {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            justify-content: center;
+        }
+        
+        .option:hover {
+            background: linear-gradient(135deg, #e1f5fe 0%, #f3e5f5 100%);
+            border-color: #81d4fa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        }
+        
+        .option.selected {
+            background: linear-gradient(135deg, #bbdefb 0%, #e1bee7 100%);
+            border-color: #5e35b1;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+        
+        .option.correct {
+            background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);
+            border-color: #43a047;
+            color: #1b5e20;
+        }
+        
+        .option.incorrect {
+            background: linear-gradient(135deg, #ffcdd2 0%, #ef9a9a 100%);
+            border-color: #e53935;
+            color: #b71c1c;
+        }
+        
+        .option-letter {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            background: linear-gradient(135deg, #81d4fa 0%, #ce93d8 100%);
+            color: white;
+            text-align: center;
+            line-height: 28px;
+            border-radius: 50%;
+            margin-right: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid rgba(206, 147, 216, 0.3);
+            flex-shrink: 0;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.2s;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+        
+        #checkBtn {
+            background: linear-gradient(135deg, #81d4fa 0%, #29b6f6 100%);
+            color: white;
+        }
+        
+        #checkBtn:hover {
+            background: linear-gradient(135deg, #4fc3f7 0%, #0288d1 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+        }
+        
+        #checkBtn:disabled {
+            background: linear-gradient(135deg, #e0e0e0 0%, #bdbdbd 100%);
+            color: #9e9e9e;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        #nextBtn {
+            background: linear-gradient(135deg, #a5d6a7 0%, #66bb6a 100%);
+            color: white;
+        }
+        
+        #nextBtn:hover {
+            background: linear-gradient(135deg, #81c784 0%, #43a047 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+        }
+        
+        #nextBtn:disabled {
+            background: linear-gradient(135deg, #e0e0e0 0%, #bdbdbd 100%);
+            color: #9e9e9e;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .score-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: linear-gradient(135deg, #e1f5fe 0%, #f3e5f5 100%);
+            border-radius: 10px;
+            margin-top: 15px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            flex-shrink: 0;
+        }
+        
+        .score {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #5e35b1;
+        }
+        
+        .question-number {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #5e35b1;
+        }
+        
+        .percentage {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #5e35b1;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 4px 8px;
+            border-radius: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+        
+        .fraction {
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+            margin: 0 2px;
+        }
+        
+        .fraction span {
+            display: block;
+        }
+        
+        .fraction .numerator {
+            border-bottom: 1px solid;
+            padding: 0 3px;
+        }
+        
+        .fraction .denominator {
+            padding: 0 3px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .left-content {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+        }
+        
+        .question-prompt {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #5e35b1;
+            text-align: center;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+        
+        .left-bottom-section {
+            margin-top: auto;
+            flex-shrink: 0;
+        }
+        
+        @media (max-height: 800px) {
+            .question-display, .description-display {
+                min-height: 90px;
+                padding: 15px;
+                font-size: 1.3rem;
+            }
+            
+            .option {
+                padding: 12px 14px;
+                font-size: 1rem;
+                min-height: 55px;
+            }
+            
+            .full-width-formula {
+                padding: 10px;
+                font-size: 1.1rem;
+                margin: 8px 0 15px 0;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .feedback-container {
+                min-height: 70px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .content-area {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            .mode-toggle {
+                position: relative;
+                right: auto;
+                margin-top: 10px;
+            }
+            
+            .options-wrapper {
+                min-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-row">
+            <h1>Function Transformations Quiz</h1>
+            <div class="mode-toggle">
+                <span class="toggle-label toggle-hard">Hard</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="modeToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label toggle-easy">Easy</span>
+            </div>
+        </div>
+        
+        <div class="full-width-formula">
+            General form: g(x) = a · f(1/b · (x - h)) + k
+        </div>
+        
+        <div class="content-area">
+            <div class="left-panel">
+                <div class="left-content">
+                    <div class="question-type" id="questionType">Type 1: Find the transformation description</div>
+                    
+                    <div class="question-display" id="functionDisplay">g(x) = f(x)</div>
+                    <div class="description-display hidden" id="descriptionDisplay"></div>
+                    
+                    <div class="question-prompt" id="questionPrompt">Select the correct transformation description:</div>
+                    
+                    <div class="feedback-container">
+                        <div class="feedback" id="feedback"></div>
+                    </div>
+                    
+                    <div class="parameters-container" id="parametersContainer">
+                        <div class="parameters-title">Current Parameters</div>
+                        <div class="parameters" id="parametersDisplay">
+                            <!-- Parameters will be displayed here -->
+                        </div>
+                    </div>
+                    
+                    <div class="left-bottom-section">
+                        <div class="controls">
+                            <button id="checkBtn" disabled>Check Answer</button>
+                            <button id="nextBtn" disabled>Next Question</button>
+                        </div>
+                        
+                        <div class="score-container">
+                            <div class="score">
+                                Score: <span id="score">0</span> / <span id="answered">0</span> 
+                                [Question <span id="currentQuestion">1</span>]
+                            </div>
+                            <div class="percentage">
+                                <span id="percentage">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <div class="options-wrapper">
+                    <div class="options-container" id="optionsContainer">
+                        <!-- Options will be generated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM elements
+            const functionDisplay = document.getElementById('functionDisplay');
+            const descriptionDisplay = document.getElementById('descriptionDisplay');
+            const questionType = document.getElementById('questionType');
+            const questionPrompt = document.getElementById('questionPrompt');
+            const parametersContainer = document.getElementById('parametersContainer');
+            const parametersDisplay = document.getElementById('parametersDisplay');
+            const optionsContainer = document.getElementById('optionsContainer');
+            const feedback = document.getElementById('feedback');
+            const checkBtn = document.getElementById('checkBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const scoreElement = document.getElementById('score');
+            const answeredElement = document.getElementById('answered');
+            const currentQuestionElement = document.getElementById('currentQuestion');
+            const percentageElement = document.getElementById('percentage');
+            const modeToggle = document.getElementById('modeToggle');
+            
+            // Game state
+            let currentQuestion = null;
+            let selectedOption = null;
+            let score = 0;
+            let answeredQuestions = 0; // Questions that have been answered
+            let totalQuestions = 0; // Total questions generated (including current one)
+            let isEasyMode = false; // Start in hard mode
+            let questionTypes = ['function-to-description', 'description-to-function']; // Two question types
+            let currentQuestionType = '';
+            
+            // Initialize the game
+            generateNewQuestion();
+            
+            // Event listeners
+            checkBtn.addEventListener('click', checkAnswer);
+            nextBtn.addEventListener('click', generateNewQuestion);
+            modeToggle.addEventListener('change', toggleMode);
+            
+            // Update percentage score (only based on answered questions)
+            function updatePercentage() {
+                if (answeredQuestions === 0) {
+                    percentageElement.textContent = "0%";
+                } else {
+                    const percentage = Math.round((score / answeredQuestions) * 100);
+                    percentageElement.textContent = `${percentage}%`;
+                }
+            }
+            
+            // Update display
+            function updateDisplay() {
+                scoreElement.textContent = score;
+                answeredElement.textContent = answeredQuestions;
+                currentQuestionElement.textContent = totalQuestions;
+                updatePercentage();
+            }
+            
+            // Toggle between easy and hard mode
+            function toggleMode() {
+                isEasyMode = modeToggle.checked;
+                
+                // Show/hide parameters based on mode
+                if (isEasyMode) {
+                    parametersContainer.classList.remove("hidden");
+                } else {
+                    parametersContainer.classList.add("hidden");
+                }
+            }
+            
+            // Generate a new question
+            function generateNewQuestion() {
+                // Reset UI
+                feedback.className = 'feedback';
+                feedback.textContent = '';
+                checkBtn.disabled = true;
+                nextBtn.disabled = true;
+                selectedOption = null;
+                
+                // Clear previous options
+                optionsContainer.innerHTML = '';
+                
+                // Randomly select question type (50/50 chance)
+                currentQuestionType = questionTypes[Math.floor(Math.random() * questionTypes.length)];
+                
+                // Generate random parameters and question
+                currentQuestion = generateQuestion(currentQuestionType);
+                
+                // Display the question based on type
+                displayQuestion(currentQuestion);
+                
+                // Display parameters
+                displayParameters(currentQuestion.params);
+                
+                // Generate answer options
+                generateOptions(currentQuestion);
+                
+                // Update question count
+                totalQuestions++;
+                updateDisplay();
+                
+                // Apply current mode
+                toggleMode();
+            }
+            
+            // Display question based on type
+            function displayQuestion(question) {
+                if (question.type === 'function-to-description') {
+                    // Show function, hide description
+                    functionDisplay.classList.remove('hidden');
+                    functionDisplay.innerHTML = question.functionHTML;
+                    descriptionDisplay.classList.add('hidden');
+                    questionType.textContent = 'Type 1: Find the transformation description';
+                    questionPrompt.textContent = 'Select the correct transformation description:';
+                } else {
+                    // Show description, hide function
+                    descriptionDisplay.classList.remove('hidden');
+                    descriptionDisplay.textContent = question.correctAnswer;
+                    functionDisplay.classList.add('hidden');
+                    questionType.textContent = 'Type 2: Find the matching function';
+                    questionPrompt.textContent = 'Select the correct function g(x):';
+                }
+            }
+            
+            // Generate random question
+            function generateQuestion(type) {
+                let params;
+                let functionData;
+                let displayFactored = Math.random() < 0.5; // 50% chance to show factored form
+                
+                // Keep generating until we get a valid function with x inside f
+                do {
+                    // Generate random values for parameters
+                    // Each parameter has 50% chance to be default value, but ensure at least one is non-default
+                    params = {
+                        a: Math.random() < 0.5 ? 1 : getRandomRationalValue('a'),
+                        b: Math.random() < 0.5 ? 1 : getRandomRationalValue('b'),
+                        h: Math.random() < 0.5 ? 0 : getRandomRationalValue('h'),
+                        k: Math.random() < 0.5 ? 0 : getRandomRationalValue('k')
+                    };
+                    
+                    // Ensure at least one parameter is not default
+                    if (params.a === 1 && params.b === 1 && params.h === 0 && params.k === 0) {
+                        // Randomly select one parameter to change
+                        const paramToChange = ['a', 'b', 'h', 'k'][Math.floor(Math.random() * 4)];
+                        params[paramToChange] = getRandomRationalValue(paramToChange);
+                    }
+                    
+                    // Generate the function text with simplified fractions
+                    functionData = generateFunctionDisplay(params, displayFactored);
+                    
+                } while (!functionData.isValid); // Keep trying until we get a valid function
+                
+                // Generate the correct answer description
+                const correctAnswer = generateDescription(params);
+                
+                return {
+                    type: type,
+                    params: params,
+                    functionText: functionData.text,
+                    functionHTML: functionData.html,
+                    correctAnswer: correctAnswer,
+                    displayFactored: displayFactored
+                };
+            }
+            
+            // Generate random rational value for a parameter
+            function getRandomRationalValue(param) {
+                // Generate simple rational numbers for the quiz
+                const values = {
+                    a: [-3, -2, -1, -1/2, 1/2, 2, 3],
+                    b: [-3, -2, -1, -1/2, 1/2, 2, 3],
+                    h: [-3, -2, -1, 1, 2, 3],
+                    k: [-3, -2, -1, 1, 2, 3]
+                };
+                
+                return values[param][Math.floor(Math.random() * values[param].length)];
+            }
+            
+            // Generate the function display from parameters with simplified fractions
+            function generateFunctionDisplay(params, displayFactored = true) {
+                const { a, b, h, k } = params;
+                
+                // Start with g(x) =
+                let resultText = "g(x) = ";
+                let resultHTML = "g(x) = ";
+                
+                // Add a - handle -1 specially
+                if (a !== 1) {
+                    if (a === -1) {
+                        resultText += "-";
+                        resultHTML += "-";
+                    } else {
+                        const aDisplay = formatNumber(a);
+                        resultText += aDisplay.text;
+                        resultHTML += aDisplay.html;
+                    }
+                }
+                
+                // Add f
+                resultText += "f(";
+                resultHTML += "f(";
+                
+                // Build the argument of f
+                let argumentText = "";
+                let argumentHTML = "";
+                let hasX = false;
+                
+                if (displayFactored) {
+                    // Display in factored form: 1/b * (x - h) or simplified
+                    let coefficientText = "";
+                    let coefficientHTML = "";
+                    if (b !== 1) {
+                        const oneOverB = 1/b;
+                        const bDisplay = formatNumber(oneOverB);
+                        // Handle -1 specially
+                        if (oneOverB === -1) {
+                            coefficientText = "-";
+                            coefficientHTML = "-";
+                        } else {
+                            coefficientText = bDisplay.text;
+                            coefficientHTML = bDisplay.html;
+                        }
+                    }
+                    
+                    // Handle (x - h) part
+                    let linearPartText = "";
+                    let linearPartHTML = "";
+                    if (h !== 0) {
+                        linearPartText = `x ${h > 0 ? '-' : '+'} ${Math.abs(h)}`;
+                        linearPartHTML = `x ${h > 0 ? '-' : '+'} ${Math.abs(h)}`;
+                        hasX = true;
+                    } else {
+                        linearPartText = "x";
+                        linearPartHTML = "x";
+                        hasX = true;
+                    }
+                    
+                    // Combine coefficient and linear part
+                    if (coefficientText !== "") {
+                        // If coefficient is negative and h is 0, we don't need parentheses
+                        if (h === 0) {
+                            argumentText = coefficientText + "x";
+                            argumentHTML = coefficientHTML + "x";
+                        } else {
+                            argumentText = coefficientText + linearPartText;
+                            argumentHTML = coefficientHTML + linearPartHTML;
+                        }
+                    } else {
+                        argumentText = linearPartText;
+                        argumentHTML = linearPartHTML;
+                    }
+                } else {
+                    // Display in unfactored form: m*x + n where m = 1/b and n = -h/b
+                    const m = 1/b;
+                    const n = -h/b;
+                    
+                    // Format m
+                    let mText = "";
+                    let mHTML = "";
+                    if (m === 1) {
+                        mText = "";
+                        mHTML = "";
+                    } else if (m === -1) {
+                        mText = "-";
+                        mHTML = "-";
+                    } else {
+                        const mDisplay = formatNumber(m);
+                        mText = mDisplay.text;
+                        mHTML = mDisplay.html;
+                    }
+                    
+                    // Handle the x term
+                    if (m === 0) {
+                        // Shouldn't happen as b is never 0
+                        argumentText = "0";
+                        argumentHTML = "0";
+                    } else {
+                        argumentText = mText + "x";
+                        argumentHTML = mHTML + "x";
+                        hasX = true;
+                    }
+                    
+                    // Add the constant term if non-zero
+                    if (n !== 0) {
+                        const nDisplay = formatNumber(Math.abs(n));
+                        const sign = n > 0 ? '+' : '-';
+                        argumentText += ` ${sign} ${nDisplay.text}`;
+                        argumentHTML += ` ${sign} ${nDisplay.html}`;
+                    }
+                }
+                
+                // Add the argument to the result
+                resultText += argumentText + ")";
+                resultHTML += argumentHTML + ")";
+                
+                // Add k
+                if (k !== 0) {
+                    const sign = k > 0 ? '+' : '-';
+                    const absK = Math.abs(k);
+                    const kDisplay = formatNumber(absK);
+                    resultText += ` ${sign} ${kDisplay.text}`;
+                    resultHTML += ` ${sign} ${kDisplay.html}`;
+                }
+                
+                // Simplify expression
+                // If a=1 and there's no b, h, or k, it's just f(x)
+                if (a === 1 && b === 1 && h === 0 && k === 0) {
+                    resultText = "g(x) = f(x)";
+                    resultHTML = "g(x) = f(x)";
+                }
+                
+                return { 
+                    text: resultText, 
+                    html: resultHTML,
+                    isValid: hasX // Ensure we have x in the function
+                };
+            }
+            
+            // Format a number as either integer or simplified fraction
+            function formatNumber(num) {
+                // Check if it's an integer
+                if (Number.isInteger(num)) {
+                    return { text: num.toString(), html: num.toString() };
+                }
+                
+                // Check if it's a simple fraction
+                const tolerance = 0.0001;
+                
+                // Check for common fractions
+                const commonFractions = [
+                    { value: 1/2, text: "1/2", html: createFractionHTML(1, 2) },
+                    { value: 1/3, text: "1/3", html: createFractionHTML(1, 3) },
+                    { value: 2/3, text: "2/3", html: createFractionHTML(2, 3) },
+                    { value: 1/4, text: "1/4", html: createFractionHTML(1, 4) },
+                    { value: 3/4, text: "3/4", html: createFractionHTML(3, 4) },
+                    { value: -1/2, text: "-1/2", html: "-" + createFractionHTML(1, 2) },
+                    { value: -1/3, text: "-1/3", html: "-" + createFractionHTML(1, 3) },
+                    { value: -2/3, text: "-2/3", html: "-" + createFractionHTML(2, 3) },
+                    { value: -1/4, text: "-1/4", html: "-" + createFractionHTML(1, 4) },
+                    { value: -3/4, text: "-3/4", html: "-" + createFractionHTML(3, 4) }
+                ];
+                
+                for (const frac of commonFractions) {
+                    if (Math.abs(num - frac.value) < tolerance) {
+                        return { text: frac.text, html: frac.html };
+                    }
+                }
+                
+                // For other fractions, try to express as a/b
+                for (let denominator = 2; denominator <= 10; denominator++) {
+                    const numerator = Math.round(num * denominator);
+                    if (Math.abs(num - numerator/denominator) < tolerance) {
+                        const absNum = Math.abs(numerator);
+                        const sign = numerator < 0 ? "-" : "";
+                        return { 
+                            text: sign + absNum + "/" + denominator, 
+                            html: sign + createFractionHTML(absNum, denominator)
+                        };
+                    }
+                }
+                
+                // If not a simple fraction, show as decimal with up to 2 decimal places
+                const rounded = Math.round(num * 100) / 100;
+                return { text: rounded.toString(), html: rounded.toString() };
+            }
+            
+            // Create HTML for a fraction
+            function createFractionHTML(numerator, denominator) {
+                return `<span class="fraction"><span class="numerator">${numerator}</span><span class="denominator">${denominator}</span></span>`;
+            }
+            
+            // Generate description of transformations from parameters
+            // Order: reflections first, then scaling/stretching, then shifts
+            function generateDescription(params) {
+                const { a, b, h, k } = params;
+                const transformations = [];
+                
+                // Horizontal transformations (inside the function)
+                // First: Reflection (if any)
+                if (b < 0) {
+                    transformations.push(`reflection across the y-axis`);
+                }
+                
+                // Second: Horizontal scaling
+                if (b !== 1) {
+                    const absB = Math.abs(b);
+                    
+                    if (absB > 1) {
+                        transformations.push(`horizontal stretch by factor ${formatNumber(absB).text}`);
+                    } else if (absB < 1) {
+                        transformations.push(`horizontal compression by factor ${formatNumber(absB).text}`);
+                    }
+                }
+                
+                // Third: Horizontal shift
+                if (h !== 0) {
+                    transformations.push(`horizontal shift ${h > 0 ? 'right' : 'left'} by ${Math.abs(h)} unit${Math.abs(h) !== 1 ? 's' : ''}`);
+                }
+                
+                // Vertical transformations (outside the function)
+                // First: Reflection (if any)
+                if (a < 0) {
+                    transformations.push(`reflection across the x-axis`);
+                }
+                
+                // Second: Vertical scaling
+                if (a !== 1) {
+                    const absA = Math.abs(a);
+                    
+                    if (absA > 1) {
+                        transformations.push(`vertical stretch by factor ${formatNumber(absA).text}`);
+                    } else if (absA < 1) {
+                        transformations.push(`vertical compression by factor ${formatNumber(absA).text}`);
+                    }
+                }
+                
+                // Third: Vertical shift
+                if (k !== 0) {
+                    transformations.push(`vertical shift ${k > 0 ? 'up' : 'down'} by ${Math.abs(k)} unit${Math.abs(k) !== 1 ? 's' : ''}`);
+                }
+                
+                // If no transformations (shouldn't happen due to our generation logic)
+                if (transformations.length === 0) {
+                    return "No transformation - identical to f(x)";
+                }
+                
+                // Create the description
+                let description = transformations[0];
+                for (let i = 1; i < transformations.length; i++) {
+                    if (i === transformations.length - 1) {
+                        description += ` and ${transformations[i]}`;
+                    } else {
+                        description += `, ${transformations[i]}`;
+                    }
+                }
+                
+                return description.charAt(0).toUpperCase() + description.slice(1);
+            }
+            
+            // Display parameters
+            function displayParameters(params) {
+                parametersDisplay.innerHTML = '';
+                
+                for (const [key, value] of Object.entries(params)) {
+                    const paramDiv = document.createElement('div');
+                    paramDiv.className = 'param';
+                    
+                    const formattedValue = formatNumber(value);
+                    paramDiv.innerHTML = `<span class="param-name">${key}</span> = ${formattedValue.html}`;
+                    parametersDisplay.appendChild(paramDiv);
+                }
+            }
+            
+            // Generate answer options based on question type
+            function generateOptions(question) {
+                let allAnswers = [];
+                let correctIndex = 0;
+                
+                if (question.type === 'function-to-description') {
+                    // Type 1: Show function, choose correct description
+                    // Generate incorrect descriptions
+                    const incorrectAnswers = generateIncorrectDescriptions(question.params, question.correctAnswer);
+                    allAnswers = [question.correctAnswer, ...incorrectAnswers];
+                    
+                    // Shuffle the answers
+                    shuffleArray(allAnswers);
+                    
+                    // Find the index of the correct answer after shuffling
+                    correctIndex = allAnswers.indexOf(question.correctAnswer);
+                    
+                    // Create option elements
+                    const letters = ['A', 'B', 'C', 'D'];
+                    for (let i = 0; i < 4; i++) {
+                        const option = document.createElement('div');
+                        option.className = 'option';
+                        option.dataset.index = i;
+                        option.dataset.correct = (i === correctIndex).toString();
+                        
+                        option.innerHTML = `
+                            <span class="option-letter">${letters[i]}</span>
+                            <span class="option-text">${allAnswers[i]}</span>
+                        `;
+                        
+                        option.addEventListener('click', () => selectOption(option));
+                        optionsContainer.appendChild(option);
+                    }
+                } else {
+                    // Type 2: Show description, choose correct function
+                    // Generate incorrect functions (some factored, some unfactored)
+                    const incorrectFunctions = generateIncorrectFunctions(question.params, question.functionHTML, question.displayFactored);
+                    allAnswers = [question.functionHTML, ...incorrectFunctions];
+                    
+                    // Shuffle the answers
+                    shuffleArray(allAnswers);
+                    
+                    // Find the index of the correct answer after shuffling
+                    correctIndex = allAnswers.indexOf(question.functionHTML);
+                    
+                    // Create option elements
+                    const letters = ['A', 'B', 'C', 'D'];
+                    for (let i = 0; i < 4; i++) {
+                        const option = document.createElement('div');
+                        option.className = 'option function-option';
+                        option.dataset.index = i;
+                        option.dataset.correct = (i === correctIndex).toString();
+                        
+                        option.innerHTML = `
+                            <span class="option-letter">${letters[i]}</span>
+                            <span class="option-text">${allAnswers[i]}</span>
+                        `;
+                        
+                        option.addEventListener('click', () => selectOption(option));
+                        optionsContainer.appendChild(option);
+                    }
+                }
+            }
+            
+            // Generate incorrect descriptions
+            function generateIncorrectDescriptions(params, correctAnswer) {
+                const incorrect = new Set();
+                const { a, b, h, k } = params;
+                
+                // Generate multiple variations until we have 3 unique ones
+                while (incorrect.size < 3) {
+                    let modifiedParams = {...params};
+                    
+                    // Random modification strategies
+                    const strategies = [
+                        () => { // Change sign of one parameter
+                            const paramToChange = ['a', 'b', 'h', 'k'][Math.floor(Math.random() * 4)];
+                            if (modifiedParams[paramToChange] !== 0) {
+                                modifiedParams[paramToChange] = -modifiedParams[paramToChange];
+                            }
+                        },
+                        () => { // Swap h and k
+                            if (h !== 0 && k !== 0) {
+                                [modifiedParams.h, modifiedParams.k] = [modifiedParams.k, modifiedParams.h];
+                            }
+                        },
+                        () => { // Invert a or b
+                            if (Math.abs(a) > 1 || Math.abs(a) < 1) {
+                                modifiedParams.a = 1/a;
+                            }
+                            if (Math.abs(b) > 1 || Math.abs(b) < 1) {
+                                modifiedParams.b = 1/b;
+                            }
+                        },
+                        () => { // Set one parameter to default
+                            const paramsToReset = [];
+                            if (a !== 1) paramsToReset.push('a');
+                            if (b !== 1) paramsToReset.push('b');
+                            if (h !== 0) paramsToReset.push('h');
+                            if (k !== 0) paramsToReset.push('k');
+                            
+                            if (paramsToReset.length > 0) {
+                                const paramToReset = paramsToReset[Math.floor(Math.random() * paramsToReset.length)];
+                                modifiedParams[paramToReset] = (paramToReset === 'a' || paramToReset === 'b') ? 1 : 0;
+                            }
+                        }
+                    ];
+                    
+                    // Apply a random strategy
+                    strategies[Math.floor(Math.random() * strategies.length)]();
+                    
+                    // Ensure at least one parameter is not default
+                    if (modifiedParams.a === 1 && modifiedParams.b === 1 && modifiedParams.h === 0 && modifiedParams.k === 0) {
+                        continue;
+                    }
+                    
+                    // Generate description
+                    const description = generateDescription(modifiedParams);
+                    
+                    // Add if not correct and unique
+                    if (description !== correctAnswer && !incorrect.has(description)) {
+                        incorrect.add(description);
+                    }
+                }
+                
+                return Array.from(incorrect).slice(0, 3);
+            }
+            
+            // Generate incorrect functions
+            function generateIncorrectFunctions(params, correctFunctionHTML, displayFactored) {
+                const incorrect = new Set();
+                const { a, b, h, k } = params;
+                
+                // Track simplified representations to avoid duplicates
+                const simplifiedRepresentations = new Set();
+                
+                // Add the simplified representation of the correct function
+                const correctSimplified = simplifyFunctionString(correctFunctionHTML);
+                simplifiedRepresentations.add(correctSimplified);
+                
+                // Generate multiple variations until we have 3 unique ones
+                while (incorrect.size < 3) {
+                    let modifiedParams = {...params};
+                    
+                    // Random modification strategies
+                    const strategies = [
+                        () => { // Change sign of one parameter
+                            const paramToChange = ['a', 'b', 'h', 'k'][Math.floor(Math.random() * 4)];
+                            if (modifiedParams[paramToChange] !== 0) {
+                                modifiedParams[paramToChange] = -modifiedParams[paramToChange];
+                            }
+                        },
+                        () => { // Swap h and k
+                            if (h !== 0 && k !== 0) {
+                                [modifiedParams.h, modifiedParams.k] = [modifiedParams.k, modifiedParams.h];
+                            }
+                        },
+                        () => { // Invert a or b
+                            if (Math.abs(a) > 1 || Math.abs(a) < 1) {
+                                modifiedParams.a = 1/a;
+                            }
+                            if (Math.abs(b) > 1 || Math.abs(b) < 1) {
+                                modifiedParams.b = 1/b;
+                            }
+                        },
+                        () => { // Set one parameter to default
+                            const paramsToReset = [];
+                            if (a !== 1) paramsToReset.push('a');
+                            if (b !== 1) paramsToReset.push('b');
+                            if (h !== 0) paramsToReset.push('h');
+                            if (k !== 0) paramsToReset.push('k');
+                            
+                            if (paramsToReset.length > 0) {
+                                const paramToReset = paramsToReset[Math.floor(Math.random() * paramsToReset.length)];
+                                modifiedParams[paramToReset] = (paramToReset === 'a' || paramToReset === 'b') ? 1 : 0;
+                            }
+                        },
+                        () => { // Random change to one parameter
+                            const paramToRandomize = ['a', 'b', 'h', 'k'][Math.floor(Math.random() * 4)];
+                            let newValue;
+                            do {
+                                newValue = getRandomRationalValue(paramToRandomize);
+                            } while (newValue === params[paramToRandomize]);
+                            modifiedParams[paramToRandomize] = newValue;
+                        }
+                    ];
+                    
+                    // Apply a random strategy
+                    strategies[Math.floor(Math.random() * strategies.length)]();
+                    
+                    // Ensure at least one parameter is not default
+                    if (modifiedParams.a === 1 && modifiedParams.b === 1 && modifiedParams.h === 0 && modifiedParams.k === 0) {
+                        continue;
+                    }
+                    
+                    // Generate function display (randomly choose between factored and unfactored for incorrect options)
+                    const useFactoredForIncorrect = Math.random() < 0.5;
+                    const functionData = generateFunctionDisplay(modifiedParams, useFactoredForIncorrect);
+                    
+                    // Check if this function is equivalent to any already generated
+                    const simplifiedHTML = simplifyFunctionString(functionData.html);
+                    
+                    // Skip if this simplified representation already exists
+                    if (simplifiedRepresentations.has(simplifiedHTML)) {
+                        continue;
+                    }
+                    
+                    // Add if not correct and unique
+                    if (functionData.html !== correctFunctionHTML && !incorrect.has(functionData.html)) {
+                        incorrect.add(functionData.html);
+                        simplifiedRepresentations.add(simplifiedHTML);
+                    }
+                }
+                
+                return Array.from(incorrect).slice(0, 3);
+            }
+            
+            // Simplify function string to detect equivalent representations
+            function simplifyFunctionString(funcHTML) {
+                // Remove the g(x) = part
+                let simplified = funcHTML.replace(/g\(x\) = /g, '');
+                
+                // Replace fraction HTML with plain text fractions for comparison
+                simplified = simplified.replace(/<span class="fraction"><span class="numerator">(\d+)<\/span><span class="denominator">(\d+)<\/span><\/span>/g, '$1/$2');
+                
+                // Remove double parentheses: f((x+2)) -> f(x+2)
+                simplified = simplified.replace(/f\(\(([^)]+)\)\)/g, 'f($1)');
+                
+                // Remove unnecessary parentheses around simple expressions
+                // f(1/2(x+2)) -> f(1/2(x+2)) (keep as is)
+                // f((x+2)) -> f(x+2) (already handled above)
+                
+                // Normalize spacing
+                simplified = simplified.replace(/\s+/g, ' ').trim();
+                
+                // Handle special cases for -1 coefficients
+                simplified = simplified.replace(/-1x/g, '-x');
+                simplified = simplified.replace(/1x/g, 'x');
+                
+                return simplified;
+            }
+            
+            // Select an option
+            function selectOption(option) {
+                // If already answered, don't allow selection
+                if (nextBtn.disabled === false) return;
+                
+                // Remove selection from all options
+                document.querySelectorAll('.option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Add selection to clicked option
+                option.classList.add('selected');
+                selectedOption = option;
+                checkBtn.disabled = false;
+            }
+            
+            // Check the selected answer
+            function checkAnswer() {
+                if (!selectedOption) return;
+                
+                const isCorrect = selectedOption.dataset.correct === 'true';
+                
+                // Update answered questions count
+                answeredQuestions++;
+                
+                // Show feedback
+                if (isCorrect) {
+                    feedback.textContent = "Correct! Well done.";
+                    feedback.className = 'feedback correct';
+                    score++;
+                } else {
+                    feedback.textContent = "Incorrect. Try again next time!";
+                    feedback.className = 'feedback incorrect';
+                    
+                    // Highlight correct answer
+                    document.querySelectorAll('.option').forEach(opt => {
+                        if (opt.dataset.correct === 'true') {
+                            opt.classList.add('correct');
+                        }
+                    });
+                }
+                
+                // Disable check button, enable next button
+                checkBtn.disabled = true;
+                nextBtn.disabled = false;
+                
+                // Highlight selected option if incorrect
+                if (!isCorrect) {
+                    selectedOption.classList.add('incorrect');
+                }
+                
+                // Update display
+                updateDisplay();
+            }
+            
+            // Utility function to shuffle array
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+        });
+    </script>
+</body>
+</html>
